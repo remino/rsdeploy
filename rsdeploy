@@ -25,7 +25,7 @@ rsdeploy_main() {
 
 	while getopts c:d:f:hrs:vw opt; do
 		case $opt in
-			c) RSDEPLOY_CONFIG="$opt" ;;
+			c) _load_config "$OPTARG" ;;
 			d) RSDEPLOY_DEST="$OPTARG" ;;
 			f) RSDEPLOY_FILTER="$OPTARG" ;;
 			h) CMD=help ;;
@@ -58,20 +58,20 @@ Deploy directory to remote server by using rsync.
 
 OPTIONS:
 
-	-c <file>   Specify config file location.
+	-c <file>   Specify config file location. Can be set multiple times.
+	            Source directory will be relative to the directory of the last
+	            found config file.
 
 	-d          Destination host and directory to deploy.
 	            Can be set with RSDEPLOY_DEST.
 
-	-f          Filter file to use for rsync.
-	            Can be set with RSDEPLOY_FILTER.
+	-f          Filter file to use for rsync. Can be set with RSDEPLOY_FILTER.
 
 	-h          Show this help screen.
 
 	-r          Alias to -w.
 
-	-s <src>    Source directory to deploy.
-	            Can be set with RSDEPLOY_SRC.
+	-s <src>    Source directory to deploy. Can be set with RSDEPLOY_SRC.
 
 	-v          Show version.
 
@@ -174,15 +174,15 @@ _invalid_opt() {
 }
 
 _load_config() {
-	if [ -z "$RSDEPLOY_CONFIG" ]; then
-		RSDEPLOY_CONFIG="$(_find_config_file)"
-		[ -z "$RSDEPLOY_CONFIG" ] && return
+	rc="$1"
+
+	if [ -z "$rc" ]; then
+		rc="$(_find_config_file)"
 	else
-		[ ! -f "$RSDEPLOY_CONFIG" ] \
-			&& _fatal "$E_MISSING_FILE" "Config file not found: $RSDEPLOY_CONFIG"
+		[ ! -f "$rc" ] && return
 	fi
 
-	[ -z "$RSDEPLOY_CONFIG" ] && return
+	export RSDEPLOY_CONFIG="$rc"
 
 	eval "$(
 		# shellcheck source=/dev/null
