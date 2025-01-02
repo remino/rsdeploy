@@ -19,11 +19,11 @@ deploy_main() {
 
 	DRY_RUN_ARG='-n'
 
-	while getopts c:hrv opt; do
+	while getopts c:hrvw opt; do
 		case $opt in
 			c) _load_config "$OPTARG" ;;
 			h) CMD=help ;;
-			r) DRY_RUN_ARG= ;;
+			r | w) DRY_RUN_ARG= ;;
 			v) CMD=version ;;
 			*) _invalid_opt ;;
 		esac
@@ -45,7 +45,7 @@ deploy_help() {
 	cat << USAGE
 $SCRIPT_INT $VERSION
 
-USAGE: $SCRIPT_INT [-hrv] -c <file> [<rsync_args>]
+USAGE: $SCRIPT_INT [-hrvw] -c <file> [<rsync_args>]
 
 Deploy directory to remote server by using rsync.
 
@@ -53,9 +53,9 @@ OPTIONS:
 
 	-c <file>   Specify config file location.
 	-h          Show this help screen.
-	-r          Run deploy.
-	            When not specified, a dry run is performed by default.
+	-r          Alias to -w.
 	-v          Show version.
+	-w          Wet run. When not specified, a dry run is performed by default.
 
 USAGE
 }
