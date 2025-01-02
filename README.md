@@ -1,4 +1,4 @@
-# template
+# rsdeploy
 
 By Rémino Rem <https://remino.net/>
 
