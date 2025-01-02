@@ -2,13 +2,11 @@
 
 By Rémino Rem <https://remino.net/>
 
-Short description of app or project.
+Deploy directory to remote server by using rsync.
 
-[Docs](https://example.com/) | [Demo](https://example.com/) |
-[Code](https://example.com/) | [Download](https://example.com/)
+<!-- mtoc-start -->
 
 - [About](#about)
-  - [Built With](#built-with)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -16,57 +14,39 @@ Short description of app or project.
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
-- [Acknowledgments](#acknowledgments)
+
+<!-- mtoc-end -->
 
 ## About
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-Longer description of product.
+Simpler wrapper script for rsync to deploy a directory to a remote server.
 
 [Back to top](#template)
-
-### Built With
-
-- [Node.js](https://nodejs.org/)
-- etc.
-
-[Back to top](#template)
-
-<!-- GETTING STARTED -->
 
 ## Getting Started
 
 ### Prerequisites
 
-- npm
-  ```sh
-  npm install npm@latest -g
-  ```
+- rsync
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API'
-   ```
+```sh
+# Via Homebrew
+brew install remino/remino/rsdeploy
+
+# Via Git clone
+git clone https://github.com/remino/rsdeploy
+```
 
 [Back to top](#template)
 
 ## Usage
 
-Example usage of app or project.
+You need to set the source directory, destination host and directory, as well as
+an optional filter file.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+See `.env.example` or `rsdeploy -h`.
 
 [Back to top](#template)
 
@@ -97,13 +77,5 @@ Distributed under the ISC License. See `LICENSE.txt` for more information.
 ## Contact
 
 Rémino Rem <https://remino.net/>
-
-[Back to top](#template)
-
-## Acknowledgments
-
-- []()
-- []()
-- []()
 
 [Back to top](#template)
