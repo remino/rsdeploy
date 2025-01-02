@@ -18,10 +18,10 @@ deploy_main() {
 
 	while getopts c:hr opt; do
 		case $opt in
-		c) _load_config "$OPTARG" ;;
-		h) CMD=help ;;
-		r) DRY_RUN_ARG= ;;
-		*) _invalid_opt ;;
+			c) _load_config "$OPTARG" ;;
+			h) CMD=help ;;
+			r) DRY_RUN_ARG= ;;
+			*) _invalid_opt ;;
 		esac
 	done
 
@@ -30,15 +30,15 @@ deploy_main() {
 	[ -z "$CMD" ] && CMD="process"
 
 	case "$CMD" in
-	help | process) "deploy_$CMD" "$@" ;;
-	*) _invalid_cmd ;;
+		help | process) "deploy_$CMD" "$@" ;;
+		*) _invalid_cmd ;;
 	esac
 
 	_exit
 }
 
 deploy_help() {
-	cat <<USAGE
+	cat << USAGE
 Usage: $SCRIPT_INT [-hr] -c <file> [<rsync_args>]
 
 Deploy site.
@@ -137,7 +137,7 @@ _require() {
 	missing_bin=0
 
 	for bin in "$@"; do
-		if ! which "$bin" >/dev/null 2>&1; then
+		if ! which "$bin" > /dev/null 2>&1; then
 			missing_bin=1
 			_error "Required: $bin"
 		fi
