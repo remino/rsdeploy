@@ -150,7 +150,6 @@ _init() {
 	missing=""
 
 	[ -z "$RSDEPLOY_DEST" ] && missing="${missing}RSDEPLOY_DEST "
-	[ -z "$RSDEPLOY_FILTER" ] && missing="${missing}RSDEPLOY_FILTER "
 	[ -z "$RSDEPLOY_SRC" ] && missing="${missing}RSDEPLOY_SRC "
 
 	echo "RSDEPLOY_DEST=$RSDEPLOY_DEST"
