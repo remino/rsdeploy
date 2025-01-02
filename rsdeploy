@@ -22,11 +22,14 @@ rsdeploy_main() {
 	RSDEPLOY_CONFIG=""
 	DRY_RUN_ARG='-n'
 
-	while getopts c:hrvw opt; do
+	while getopts c:d:f:hrs:vw opt; do
 		case $opt in
 			c) RSDEPLOY_CONFIG="$opt" ;;
-			h) CMD=help ;;
+			d) RSDEPLOY_DEST="$OPTARG" ;;
+			f) RSDEPLOY_FILTER="$OPTARG" ;;
+			h) CMD=help ;;o
 			r | w) DRY_RUN_ARG= ;;
+			s) RSDEPLOY_SRC="$OPTARG" ;;
 			v) CMD=version ;;
 			*) _invalid_opt ;;
 		esac
@@ -48,16 +51,29 @@ rsdeploy_help() {
 	cat << USAGE
 $SCRIPT_INT $VERSION
 
-USAGE: $SCRIPT_INT [-hrvw] -c <file> [<rsync_args>]
+USAGE: $SCRIPT_INT [<options>] -c <file> [<rsync_args>]
 
 Deploy directory to remote server by using rsync.
 
 OPTIONS:
 
 	-c <file>   Specify config file location.
+
+	-d          Destination host and directory to deploy.
+	            Can be set with RSDEPLOY_DEST.
+
+	-f          Filter file to use for rsync.
+	            Can be set with RSDEPLOY_FILTER.
+
 	-h          Show this help screen.
+
 	-r          Alias to -w.
+
+	-s <src>    Source directory to deploy.
+	            Can be set with RSDEPLOY_SRC.
+
 	-v          Show version.
+
 	-w          Wet run. When not specified, a dry run is performed by default.
 
 USAGE
@@ -113,6 +129,18 @@ _fatal() {
 	exit "$exit_code"
 }
 
+_find_config_file() {
+	dirpath="$PWD"
+
+	while [ "$dirpath" != "/" ]; do
+		conffile="$dirpath/.env"
+		[ -f "$conffile" ] && echo "$conffile" && return
+		dirpath="$(dirname "$dirpath")"
+	done
+
+	echo ""
+}
+
 _init() {
 	missing=""
 
@@ -141,25 +169,16 @@ _invalid_opt() {
 	exit $E_ARGS
 }
 
-_find_config_file() {
-	dirpath="$PWD"
-
-	while [ "$dirpath" != "/" ]; do
-		conffile="$dirpath/.env"
-		[ -f "$conffile" ] && echo "$conffile" && return
-		dirpath="$(dirname "$dirpath")"
-	done
-
-	echo ""
-}
-
 _load_config() {
 	if [ -z "$RSDEPLOY_CONFIG" ]; then
 		RSDEPLOY_CONFIG="$(_find_config_file)"
-		[ -z "$RSDEPLOY_CONFIG" ] && _fatal "$E_MISSING_FILE" "Config file not found."
+		[ -z "$RSDEPLOY_CONFIG" ] && return
+	else
+		[ ! -f "$RSDEPLOY_CONFIG" ] \
+			&& _fatal "$E_MISSING_FILE" "Config file not found: $RSDEPLOY_CONFIG"
 	fi
 
-	[ ! -f "$RSDEPLOY_CONFIG" ] && _fatal "$E_MISSING_FILE" "Config file not found: $RSDEPLOY_CONFIG"
+	[ -z "$RSDEPLOY_CONFIG" ] && return
 
 	eval "$(
 		# shellcheck source=/dev/null
