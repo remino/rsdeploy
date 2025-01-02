@@ -3,6 +3,8 @@
 # Deploy directory to remote server by using rsync.
 # shellcheck disable=SC2317
 
+VERSION="0.1.0"
+
 deploy_main() {
 	trap _exit INT TERM
 
@@ -17,11 +19,12 @@ deploy_main() {
 
 	DRY_RUN_ARG='-n'
 
-	while getopts c:hr opt; do
+	while getopts c:hrv opt; do
 		case $opt in
 			c) _load_config "$OPTARG" ;;
 			h) CMD=help ;;
 			r) DRY_RUN_ARG= ;;
+			v) CMD=version ;;
 			*) _invalid_opt ;;
 		esac
 	done
@@ -31,7 +34,7 @@ deploy_main() {
 	[ -z "$CMD" ] && CMD="process"
 
 	case "$CMD" in
-		help | process) "deploy_$CMD" "$@" ;;
+		help | process | version) "deploy_$CMD" "$@" ;;
 		*) _invalid_cmd ;;
 	esac
 
@@ -40,16 +43,19 @@ deploy_main() {
 
 deploy_help() {
 	cat << USAGE
-Usage: $SCRIPT_INT [-hr] -c <file> [<rsync_args>]
+$SCRIPT_INT $VERSION
+
+USAGE: $SCRIPT_INT [-hrv] -c <file> [<rsync_args>]
 
 Deploy directory to remote server by using rsync.
 
-Options:
+OPTIONS:
 
 	-c <file>   Specify config file location.
 	-h          Show this help screen.
 	-r          Run deploy.
 	            When not specified, a dry run is performed by default.
+	-v          Show version.
 
 USAGE
 }
@@ -70,6 +76,10 @@ deploy_process() {
 		"$ROOT_DIR/$DEPLOY_SRC" \
 		"$DEPLOY_DEST" \
 		;
+}
+
+deploy_version() {
+	_echo "$SCRIPT_INT $VERSION"
 }
 
 _echo() {
