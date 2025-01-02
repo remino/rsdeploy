@@ -12,17 +12,19 @@ rsdeploy_main() {
 	E_ARGS=16
 	E_MISSING_APP=17
 	E_MISSING_ENV=18
+	E_MISSING_FILE=19
 
 	SCRIPT_INT="$(basename "$0")"
 	SCRIPT_PATH="$(readlink -f "$0")"
 	SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
 	ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
+	RSDEPLOY_CONFIG=""
 	DRY_RUN_ARG='-n'
 
 	while getopts c:hrvw opt; do
 		case $opt in
-			c) _load_config "$OPTARG" ;;
+			c) RSDEPLOY_CONFIG="$opt" ;;
 			h) CMD=help ;;
 			r | w) DRY_RUN_ARG= ;;
 			v) CMD=version ;;
@@ -63,6 +65,7 @@ USAGE
 
 rsdeploy_process() {
 	_require rsync
+	_load_config
 	_init
 
 	FILTER_ARG=""
@@ -138,14 +141,29 @@ _invalid_opt() {
 	exit $E_ARGS
 }
 
-_load_config() {
-	rc="$1"
+_find_config_file() {
+	dirpath="$PWD"
 
-	[ ! -f "$rc" ] && return
+	while [ "$dirpath" != "/" ]; do
+		conffile="$dirpath/.env"
+		[ -f "$conffile" ] && echo "$conffile" && return
+		dirpath="$(dirname "$dirpath")"
+	done
+
+	echo ""
+}
+
+_load_config() {
+	if [ -z "$RSDEPLOY_CONFIG" ]; then
+		RSDEPLOY_CONFIG="$(_find_config_file)"
+		[ -z "$RSDEPLOY_CONFIG" ] && _fatal "$E_MISSING_FILE" "Config file not found."
+	fi
+
+	[ ! -f "$RSDEPLOY_CONFIG" ] && _fatal "$E_MISSING_FILE" "Config file not found: $RSDEPLOY_CONFIG"
 
 	eval "$(
 		# shellcheck source=/dev/null
-		. "$rc"
+		. "$RSDEPLOY_CONFIG"
 		echo "DEPLOY_DEST=$DEPLOY_DEST"
 		echo "DEPLOY_FILTER=$DEPLOY_FILTER"
 		echo "DEPLOY_SRC=$DEPLOY_SRC"
