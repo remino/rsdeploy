@@ -92,7 +92,7 @@ rsdeploy_process() {
 		FILTER_ARG="--filter='merge $RSDEPLOY_FILTER'"
 	fi
 
-	if [ -n "$RSDEPLOY_CONFIG" ] && [ -f "$RSDEPLOY_CONFIG"]; then
+	if [ -n "$RSDEPLOY_CONFIG" ] && [ -f "$RSDEPLOY_CONFIG" ]; then
 		cd "$(dirname "$RSDEPLOY_CONFIG")" || _fatal "$E_CD_FAILED" "Cannot change to config file directory."
 	fi
 
