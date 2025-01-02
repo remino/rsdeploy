@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # deploy
 # Deploy directory to remote server by using rsync.
 # shellcheck disable=SC2317
