@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # deploy
 # Deploy directory to remote server by using rsync.
+# Rémino Rem <https://remino.net/>
 # shellcheck disable=SC2317
 
 VERSION="0.1.0"
