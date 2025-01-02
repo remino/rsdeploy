@@ -4,7 +4,7 @@
 # Rémino Rem <https://remino.net/>
 # shellcheck disable=SC2317
 
-VERSION="1.0.0"
+VERSION="1.1.0"
 
 rsdeploy_main() {
 	trap _exit INT TERM
