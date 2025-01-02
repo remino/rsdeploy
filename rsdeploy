@@ -27,7 +27,7 @@ rsdeploy_main() {
 			c) RSDEPLOY_CONFIG="$opt" ;;
 			d) RSDEPLOY_DEST="$OPTARG" ;;
 			f) RSDEPLOY_FILTER="$OPTARG" ;;
-			h) CMD=help ;;o
+			h) CMD=help ;;
 			r | w) DRY_RUN_ARG= ;;
 			s) RSDEPLOY_SRC="$OPTARG" ;;
 			v) CMD=version ;;
