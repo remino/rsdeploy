@@ -64,13 +64,20 @@ deploy_process() {
 	_require rsync
 	_init
 
+	FILTER_ARG=""
+
+	if [ -n "$DEPLOY_FILTER" ]; then
+		[ ! -f "$DEPLOY_FILTER" ] && _fatal "$E_MISSING_APP" "Filter file not found: $DEPLOY_FILTER"
+		FILTER_ARG="--filter='merge $DEPLOY_FILTER'"
+	fi
+
 	# shellcheck disable=SC2086
 	rsync \
 		-aOJvz \
 		--delete-after \
 		--no-perms \
 		--progress \
-		--filter="merge $ROOT_DIR/.deploy-filter" \
+		$FILTER_ARG \
 		$DRY_RUN_ARG \
 		"$@" \
 		"$ROOT_DIR/$DEPLOY_SRC" \
@@ -106,9 +113,11 @@ _init() {
 	missing=""
 
 	[ -z "$DEPLOY_DEST" ] && missing="${missing}DEPLOY_DEST "
+	[ -z "$DEPLOY_FILTER" ] && missing="${missing}DEPLOY_FILTER "
 	[ -z "$DEPLOY_SRC" ] && missing="${missing}DEPLOY_SRC "
 
 	echo "DEPLOY_DEST=$DEPLOY_DEST"
+	echo "DEPLOY_FILTER=$DEPLOY_FILTER"
 	echo "DEPLOY_SRC=$DEPLOY_SRC"
 
 	[ -n "$missing" ] && _fatal "$E_MISSING_ENV" "Missing env vars: $missing"
@@ -137,10 +146,12 @@ _load_config() {
 		# shellcheck source=/dev/null
 		. "$rc"
 		echo "DEPLOY_DEST=$DEPLOY_DEST"
+		echo "DEPLOY_FILTER=$DEPLOY_FILTER"
 		echo "DEPLOY_SRC=$DEPLOY_SRC"
 	)"
 
 	[ -n "$DEPLOY_DEST" ] && export DEPLOY_DEST
+	[ -n "$DEPLOY_FILTER" ] && export DEPLOY_FILTER
 	[ -n "$DEPLOY_SRC" ] && export DEPLOY_SRC
 }
 
