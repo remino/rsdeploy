@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# deploy
+# rsdeploy
 # Deploy directory to remote server by using rsync.
 # Rémino Rem <https://remino.net/>
 # shellcheck disable=SC2317
 
 VERSION="0.1.0"
 
-deploy_main() {
+rsdeploy_main() {
 	trap _exit INT TERM
 
 	E_ARGS=16
@@ -35,14 +35,14 @@ deploy_main() {
 	[ -z "$CMD" ] && CMD="process"
 
 	case "$CMD" in
-		help | process | version) "deploy_$CMD" "$@" ;;
+		help | process | version) "rsdeploy_$CMD" "$@" ;;
 		*) _invalid_cmd ;;
 	esac
 
 	_exit
 }
 
-deploy_help() {
+rsdeploy_help() {
 	cat << USAGE
 $SCRIPT_INT $VERSION
 
@@ -61,15 +61,15 @@ OPTIONS:
 USAGE
 }
 
-deploy_process() {
+rsdeploy_process() {
 	_require rsync
 	_init
 
 	FILTER_ARG=""
 
-	if [ -n "$DEPLOY_FILTER" ]; then
-		[ ! -f "$DEPLOY_FILTER" ] && _fatal "$E_MISSING_APP" "Filter file not found: $DEPLOY_FILTER"
-		FILTER_ARG="--filter='merge $DEPLOY_FILTER'"
+	if [ -n "$RSDEPLOY_FILTER" ]; then
+		[ ! -f "$RSDEPLOY_FILTER" ] && _fatal "$E_MISSING_APP" "Filter file not found: $RSDEPLOY_FILTER"
+		FILTER_ARG="--filter='merge $RSDEPLOY_FILTER'"
 	fi
 
 	# shellcheck disable=SC2086
@@ -81,12 +81,12 @@ deploy_process() {
 		$FILTER_ARG \
 		$DRY_RUN_ARG \
 		"$@" \
-		"$ROOT_DIR/$DEPLOY_SRC" \
-		"$DEPLOY_DEST" \
+		"$ROOT_DIR/$RSDEPLOY_SRC" \
+		"$RSDEPLOY_DEST" \
 		;
 }
 
-deploy_version() {
+rsdeploy_version() {
 	_echo "$SCRIPT_INT $VERSION"
 }
 
@@ -113,13 +113,13 @@ _fatal() {
 _init() {
 	missing=""
 
-	[ -z "$DEPLOY_DEST" ] && missing="${missing}DEPLOY_DEST "
-	[ -z "$DEPLOY_FILTER" ] && missing="${missing}DEPLOY_FILTER "
-	[ -z "$DEPLOY_SRC" ] && missing="${missing}DEPLOY_SRC "
+	[ -z "$RSDEPLOY_DEST" ] && missing="${missing}RSDEPLOY_DEST "
+	[ -z "$RSDEPLOY_FILTER" ] && missing="${missing}RSDEPLOY_FILTER "
+	[ -z "$RSDEPLOY_SRC" ] && missing="${missing}RSDEPLOY_SRC "
 
-	echo "DEPLOY_DEST=$DEPLOY_DEST"
-	echo "DEPLOY_FILTER=$DEPLOY_FILTER"
-	echo "DEPLOY_SRC=$DEPLOY_SRC"
+	echo "RSDEPLOY_DEST=$RSDEPLOY_DEST"
+	echo "RSDEPLOY_FILTER=$RSDEPLOY_FILTER"
+	echo "RSDEPLOY_SRC=$RSDEPLOY_SRC"
 
 	[ -n "$missing" ] && _fatal "$E_MISSING_ENV" "Missing env vars: $missing"
 }
@@ -127,14 +127,14 @@ _init() {
 _invalid_cmd() {
 	_error "Invalid command: $CMD"
 	_echo
-	deploy_help
+	rsdeploy_help
 	exit $E_ARGS
 }
 
 _invalid_opt() {
 	_error "Invalid option: $opt"
 	_echo
-	deploy_help
+	rsdeploy_help
 	exit $E_ARGS
 }
 
@@ -149,11 +149,19 @@ _load_config() {
 		echo "DEPLOY_DEST=$DEPLOY_DEST"
 		echo "DEPLOY_FILTER=$DEPLOY_FILTER"
 		echo "DEPLOY_SRC=$DEPLOY_SRC"
+		echo "RSDEPLOY_DEST=$RSDEPLOY_DEST"
+		echo "RSDEPLOY_FILTER=$RSDEPLOY_FILTER"
+		echo "RSDEPLOY_SRC=$RSDEPLOY_SRC"
 	)"
 
-	[ -n "$DEPLOY_DEST" ] && export DEPLOY_DEST
-	[ -n "$DEPLOY_FILTER" ] && export DEPLOY_FILTER
-	[ -n "$DEPLOY_SRC" ] && export DEPLOY_SRC
+	# Legacy support for DEPLOY_* env vars.
+	[ -n "$DEPLOY_DEST" ] && export RSDEPLOY_DEST="$DEPLOY_DEST"
+	[ -n "$DEPLOY_FILTER" ] && export RSDEPLOY_FILTER="$DEPLOY_FILTER"
+	[ -n "$DEPLOY_SRC" ] && export RSDEPLOY_SRC="$DEPLOY_SRC"
+
+	[ -n "$RSDEPLOY_DEST" ] && export RSDEPLOY_DEST
+	[ -n "$RSDEPLOY_FILTER" ] && export RSDEPLOY_FILTER
+	[ -n "$RSDEPLOY_SRC" ] && export RSDEPLOY_SRC
 }
 
 _require() {
@@ -171,4 +179,4 @@ _require() {
 	fi
 }
 
-deploy_main "$@"
+rsdeploy_main "$@"
