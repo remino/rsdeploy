@@ -89,7 +89,7 @@ rsdeploy_process() {
 
 	if [ -n "$RSDEPLOY_FILTER" ]; then
 		[ ! -f "$RSDEPLOY_FILTER" ] && _fatal "$E_MISSING_APP" "Filter file not found: $RSDEPLOY_FILTER"
-		FILTER_ARG="--filter='merge $RSDEPLOY_FILTER'"
+		FILTER="merge $RSDEPLOY_FILTER"
 	fi
 
 	if [ -n "$RSDEPLOY_CONFIG" ] && [ -f "$RSDEPLOY_CONFIG" ]; then
@@ -102,7 +102,7 @@ rsdeploy_process() {
 		--delete-after \
 		--no-perms \
 		--progress \
-		$FILTER_ARG \
+		--filter="$FILTER" \
 		$DRY_RUN_ARG \
 		"$@" \
 		"$RSDEPLOY_SRC" \
