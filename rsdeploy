@@ -91,6 +91,10 @@ rsdeploy_process() {
 		FILTER_ARG="--filter='merge $RSDEPLOY_FILTER'"
 	fi
 
+	if [ -n "$RSDEPLOY_CONFIG" ] && [ "${RSDEPLOY_SRC:0:1}" != "/" ]; then
+		SRC_DIR="$(dirname "$RSDEPLOY_CONFIG")/$RSDEPLOY_SRC"
+	fi
+
 	# shellcheck disable=SC2086
 	rsync \
 		-aOJvz \
@@ -100,7 +104,7 @@ rsdeploy_process() {
 		$FILTER_ARG \
 		$DRY_RUN_ARG \
 		"$@" \
-		"$ROOT_DIR/$RSDEPLOY_SRC" \
+		"$SRC_DIR" \
 		"$RSDEPLOY_DEST" \
 		;
 }
